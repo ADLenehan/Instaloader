@@ -7,3 +7,13 @@
 //
 
 import Foundation
+import UIKit
+
+class MediaCell: UITableViewCell {
+    
+    @IBOutlet weak var handleLabel: UILabel!
+    @IBOutlet weak var photoImageView: UIImageView!
+    @IBOutlet weak var profileImage: UIImageView!
+    @IBOutlet weak var captionLabel: UILabel!
+
+}

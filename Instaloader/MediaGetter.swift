@@ -10,27 +10,16 @@
 import Foundation
 import UIKit
 
-//protocol MediaFetcherDelegate {
-//    func didFetchMediaItems(items: NSArray)
-//    func didFailToFetchMediaItems(error: NSError)
-//    func didFetchImage(image: UIImage, tag: String)
-//    func didFailToFetchImage(error: NSError)
-//}
-
-class MediaFetcher {
+class MediaGetter {
     
     let baseURL = "https://api.instagram.com/v1/users/"
-
     let mediaEndpoint = "/media/recent/"
     let token = "25411745.5f8b700.0e6129e883e84d63ae56235e278309c7"
     
     var lastSearchURL: String?
     
-//    var delegate: MediaFetcherDelegate?
-//    
-//    init(delegate:MediaFetcherDelegate){
-//        self.delegate = delegate
-//    }
+    weak var delegate: MediaGetterDelegate?
+
     
     func getUserPhotos(userID: String) {
         get("\(baseURL)\(userID)\(mediaEndpoint)?access_token=\(token)")
@@ -42,9 +31,8 @@ class MediaFetcher {
         
         let session = NSURLSession.sharedSession()
         let dataTask = session.dataTaskWithURL(url!, completionHandler: {data, response, error -> Void in
-            print("Task completed")
             if let errorCode = error {
-                self.delegate?.didFailToFetchMediaItems(errorCode)
+                self.delegate?.didFailToGetMediaItems(errorCode)
                 return;
             }
             if let data = data {
@@ -52,13 +40,18 @@ class MediaFetcher {
                     if let jsonResult =  try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] {
                         let jsonResult = jsonResult
                         let results: NSArray = jsonResult["data"] as! NSArray
-                        self.delegate?.didFetchMediaItems(results)
+                        self.delegate?.didGetMediaItems(results)
                     }
                 }  catch {
-                    print("error")
+ //                   self.delegate?.didFailToGetMediaItems(errorCode)
                 }
             }
             })
         dataTask.resume()
     }
+}
+
+protocol MediaGetterDelegate: class {
+    func didGetMediaItems(items: NSArray)
+    func didFailToGetMediaItems(error: NSError)
 }
